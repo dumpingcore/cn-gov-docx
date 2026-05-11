@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cn-gov-docx"
+version = "0.1.0"
+description = "用Python轻松生成符合政府机关常用排版格式的docx文件！"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+
+authors = [
+    { name = "dumpingcore" }
+]
+
+dependencies = [
+    "build>=1.5.0",
+    "python-docx>=1.1.0",
+    "twine>=6.2.0",
+]
+
+keywords = [
+    "docx",
+    "government",
+    "word",
+    "china",
+    "office"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
