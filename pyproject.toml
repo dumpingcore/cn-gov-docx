@@ -32,6 +32,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.urls]
+Homepage = "https://github.com/dumpingcore/cn-gov-docx"
+Repository = "https://github.com/dumpingcore/cn-gov-docx"
+Issues = "https://github.com/dumpingcore/cn-gov-docx/issues"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
