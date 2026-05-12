@@ -2,6 +2,84 @@ from docx import Document
 from docx.shared import Pt, Cm
 from docx.oxml.ns import qn
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from lxml import etree
+
+
+def _replace_drawing(
+    run, rId, docPr_id, docPr_name, cNvPr_id, cNvPr_name, extent_cx, extent_cy
+):
+    old = run._element.xpath(
+        ".//w:drawing",
+    )[0]
+
+    new_xml = f"""
+<w:drawing
+    xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+    xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+    xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"
+    xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing">
+    <wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0"
+        relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1"
+        allowOverlap="1">
+        <wp:simplePos x="0" y="0" />
+        <wp:positionH relativeFrom="page">
+            <wp:align>center</wp:align>
+        </wp:positionH>
+        <wp:positionV relativeFrom="paragraph">
+            <wp:posOffset>364445</wp:posOffset>
+        </wp:positionV>
+        <wp:extent cx="{extent_cx}" cy="{extent_cy}" />
+        <wp:effectExtent l="0" t="0" r="4445" b="2540" />
+        <wp:wrapTopAndBottom />
+        <wp:docPr id="{docPr_id}" name="{docPr_name}" />
+        <wp:cNvGraphicFramePr>
+            <a:graphicFrameLocks
+                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+                noChangeAspect="1" />
+        </wp:cNvGraphicFramePr>
+        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+            <a:graphicData
+                uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic
+                    xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                    <pic:nvPicPr>
+                        <pic:cNvPr id="{cNvPr_id}" name="{cNvPr_name}" />
+                        <pic:cNvPicPr />
+                    </pic:nvPicPr>
+                    <pic:blipFill>
+                        <a:blip r:embed="{rId}" />
+                        <a:stretch>
+                            <a:fillRect />
+                        </a:stretch>
+                    </pic:blipFill>
+                    <pic:spPr>
+                        <a:xfrm>
+                            <a:off x="0" y="0" />
+                            <a:ext cx="{extent_cx}" cy="{extent_cy}" />
+                        </a:xfrm>
+                        <a:prstGeom prst="rect">
+                            <a:avLst />
+                        </a:prstGeom>
+                    </pic:spPr>
+                </pic:pic>
+            </a:graphicData>
+        </a:graphic>
+        <wp14:sizeRelH relativeFrom="margin">
+            <wp14:pctWidth>0</wp14:pctWidth>
+        </wp14:sizeRelH>
+        <wp14:sizeRelV relativeFrom="margin">
+            <wp14:pctHeight>0</wp14:pctHeight>
+        </wp14:sizeRelV>
+    </wp:anchor>
+</w:drawing>
+    """
+
+    new_element = etree.fromstring(new_xml.encode("utf-8"))
+
+    parent = old.getparent()
+    parent.replace(old, new_element)
 
 
 class CnGovDocx:
@@ -132,6 +210,39 @@ class CnGovDocx:
 
         run = p.add_run(text)
         self._apply_font(run, "仿宋_GB2312")
+
+    def add_image_block(self, image_path: str):
+        p = self.doc.paragraphs[-1]
+        r = p.add_run()
+        r.add_picture(image_path)
+        blip = r._element.xpath(".//a:blip")[0]
+        rId = blip.get(
+            "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed"
+        )
+
+        cNvPr = r._element.xpath(".//pic:cNvPr")[0]
+        cNvPr_id = cNvPr.get("id")
+        cNvPr_name = cNvPr.get("name")
+
+        docPr = r._element.xpath(".//wp:docPr")[0]
+        docPr_id = docPr.get("id")
+        docPr_name = docPr.get("name")
+
+        extent = r._element.xpath(".//wp:extent")[0]
+        extent_cx = int(extent.get("cx"))
+        extent_cy = int(extent.get("cy"))
+
+        section = self.doc.sections[0]
+        usable_width = section.page_width - section.left_margin - section.right_margin
+        # resize image to fit usable_width
+        if extent_cx > usable_width:
+            ratio = usable_width / extent_cx
+            extent_cy = int(extent_cy * ratio)
+            extent_cx = usable_width
+
+        _replace_drawing(
+            r, rId, docPr_id, docPr_name, cNvPr_id, cNvPr_name, extent_cx, extent_cy
+        )
 
     def save(self, filepath: str):
         self.doc.save(filepath)
