@@ -5,7 +5,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/cn-gov-docx.svg)](https://pypi.org/project/cn-gov-docx/)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 
-一个基于 `python-docx` 的中文公文 Word（.docx）生成工具，用于快速生成符合政府机关常见排版规范的文档结构。
+`cn-gov-docx`是一个基于 `python-docx` 的中文公文 Word（.docx）生成工具，用于快速生成符合政府机关常见排版规范的文档结构。
 
 本项目目标是提供一套**稳定、可复用的公文排版生成层**，减少重复排版工作。
 
