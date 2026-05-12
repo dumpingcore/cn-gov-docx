@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cn-gov-docx"
-version = "0.2.0"
+version = "0.2.1"
 description = "用Python轻松生成符合政府机关常用排版格式的docx文件！"
 readme = "README.md"
 requires-python = ">=3.10"
