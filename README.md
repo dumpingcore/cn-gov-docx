@@ -80,12 +80,12 @@ doc.save("output.docx")
 
 ## API
 
-### `GovDocx()`
+### `CnGovDocx()`
 
 创建文档实例。
 
 ```python
-doc = GovDocx()
+doc = CnGovDocx()
 ```
 
 ---
