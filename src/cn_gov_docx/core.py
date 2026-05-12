@@ -119,7 +119,7 @@ class CnGovDocx:
         h1 = styles["Heading 1"]
         h1.font.name = "黑体"
         h1.font.size = Pt(16)
-        h1.font.color.rgb = None  # Text 1
+        h1.font.color.rgb = None
         h1.font.bold = False
 
         h1.paragraph_format.line_spacing = Pt(28)
@@ -133,7 +133,7 @@ class CnGovDocx:
         h2 = styles["Heading 2"]
         h2.font.name = "黑体"
         h2.font.size = Pt(16)
-        h2.font.color.rgb = None  # Text 1
+        h2.font.color.rgb = None
         h2.font.bold = False
 
         h2.paragraph_format.line_spacing = Pt(28)
@@ -143,11 +143,11 @@ class CnGovDocx:
         h2.paragraph_format.keep_together = True
         h2.paragraph_format.first_line_indent = Pt(0)
 
-        # Heading 2
+        # Heading 3
         h3 = styles["Heading 3"]
         h3.font.name = "黑体"
         h3.font.size = Pt(16)
-        h3.font.color.rgb = None  # Text 1
+        h3.font.color.rgb = None
         h3.font.bold = False
 
         h3.paragraph_format.line_spacing = Pt(28)
